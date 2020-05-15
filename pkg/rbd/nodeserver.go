@@ -72,6 +72,10 @@ func (ns *NodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVol
 			klog.Warningf(util.Log(ctx, "MULTI_NODE_MULTI_WRITER currently only supported with volumes of access type `block`, invalid AccessMode for volume: %v"), req.GetVolumeId())
 			return nil, status.Error(codes.InvalidArgument, "rbd: RWX access mode request is only valid for volumes with access type `block`")
 		}
+	} else if req.VolumeCapability.AccessMode.Mode == csi.VolumeCapability_AccessMode_MULTI_NODE_READER_ONLY {
+		// skip in use check to support ROX temporarily
+		// ROX official support will be in v3.0 https://github.com/ceph/ceph-csi/issues/865
+		disableInUseChecks = true
 	}
 
 	volID := req.GetVolumeId()
