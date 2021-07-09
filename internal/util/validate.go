@@ -82,12 +82,16 @@ func ValidateNodeUnpublishVolumeRequest(req *csi.NodeUnpublishVolumeRequest) err
 // CheckReadOnlyManyIsSupported checks the request is to create ReadOnlyMany
 // volume is from source as empty ReadOnlyMany is not supported.
 func CheckReadOnlyManyIsSupported(req *csi.CreateVolumeRequest) error {
+	writable := false
 	for _, capability := range req.GetVolumeCapabilities() {
 		if m := capability.GetAccessMode().Mode; m == csi.VolumeCapability_AccessMode_MULTI_NODE_READER_ONLY || m == csi.VolumeCapability_AccessMode_SINGLE_NODE_READER_ONLY {
-			if req.GetVolumeContentSource() == nil {
-				return status.Error(codes.InvalidArgument, "readOnly accessMode is supported only with content source")
-			}
+			// do nothing
+		} else {
+			writable = true
 		}
+	}
+	if ! writable && req.GetVolumeContentSource() == nil {
+		return status.Error(codes.InvalidArgument, "readOnly accessMode is supported only with content source")
 	}
 	return nil
 }
