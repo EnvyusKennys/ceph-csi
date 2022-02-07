@@ -117,8 +117,10 @@ func (ns *NodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVol
 		return nil, err
 	}
 
+	disableInUseChecks := req.GetPublishContext()["readonly"] == "true"
 	isBlock := req.GetVolumeCapability().GetBlock() != nil
-	disableInUseChecks := false
+	// disableInUseChecks := false
+
 	// MULTI_NODE_MULTI_WRITER is supported by default for Block access type volumes
 	if req.VolumeCapability.AccessMode.Mode == csi.VolumeCapability_AccessMode_MULTI_NODE_MULTI_WRITER {
 		if !isBlock {
@@ -458,6 +460,17 @@ func (ns *NodeServer) mountVolumeToStagePath(ctx context.Context, req *csi.NodeS
 	}
 	if csicommon.MountOptionContains(opt, rOnly) {
 		readOnly = true
+		// mount readonly files with noload option
+		// opt = append(opt, "noload")
+		// err = diskMounter.FormatAndMount(devicePath, stagingPath, fsType, opt)
+		// if err != nil {
+		// 	util.ErrorLog(ctx, "failed to mount device path (%s) to staging path (%s) for readonly volume "+
+		// 		"(%s) error: %s Check dmesg logs if required.", devicePath,
+		// 		stagingPath,
+		// 		req.GetVolumeId(),
+		// 		err)
+		// }
+
 	}
 
 	if fsType == "xfs" {

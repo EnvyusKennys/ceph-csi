@@ -133,6 +133,8 @@ func (r *Driver) Run(conf *util.Config) {
 			csi.ControllerServiceCapability_RPC_CREATE_DELETE_SNAPSHOT,
 			csi.ControllerServiceCapability_RPC_CLONE_VOLUME,
 			csi.ControllerServiceCapability_RPC_EXPAND_VOLUME,
+			csi.ControllerServiceCapability_RPC_PUBLISH_READONLY,
+			csi.ControllerServiceCapability_RPC_PUBLISH_UNPUBLISH_VOLUME,
 		})
 		// We only support the multi-writer option when using block, but it's a supported capability for the plugin in general
 		// In addition, we want to add the remaining modes like MULTI_NODE_READER_ONLY,

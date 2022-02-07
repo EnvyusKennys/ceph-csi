@@ -1123,3 +1123,18 @@ func (cs *ControllerServer) ControllerExpandVolume(ctx context.Context, req *csi
 		NodeExpansionRequired: nodeExpansion,
 	}, nil
 }
+
+// ControllerPublishVolume collects information useful for NodeStageVolume to tell if the volume is expected to be mounted readonly.
+func (cs *ControllerServer) ControllerPublishVolume(ctx context.Context, req *csi.ControllerPublishVolumeRequest) (*csi.ControllerPublishVolumeResponse, error) {
+	ro := "false"
+	if req.GetReadonly() {
+		ro = "true"
+	}
+
+	return &csi.ControllerPublishVolumeResponse{PublishContext: map[string]string{"readonly": ro}}, nil
+}
+
+// ControllerUnpublishVolume does nothing.
+func (cs *ControllerServer) ControllerUnpublishVolume(ctx context.Context, req *csi.ControllerUnpublishVolumeRequest) (*csi.ControllerUnpublishVolumeResponse, error) {
+	return &csi.ControllerUnpublishVolumeResponse{}, nil
+}
