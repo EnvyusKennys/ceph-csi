@@ -1131,7 +1131,7 @@ func (cs *ControllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 		ro = "true"
 	}
 
-	return &csi.ControllerPublishVolumeResponse{PublishContext: map[string]string{"readonly": ro}}, nil
+	return &csi.ControllerPublishVolumeResponse{PublishContext: map[string]string{"csi.supremind.com/readonly-attach": ro}}, nil
 }
 
 // ControllerUnpublishVolume does nothing.
