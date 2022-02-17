@@ -6,7 +6,7 @@ FROM ${BASE_IMAGE} as builder
 
 LABEL stage="build"
 
-ARG CSI_IMAGE_NAME=quay.io/cephcsi/cephcsi
+ARG CSI_IMAGE_NAME=reg.supremind.info/shenyijie/ceph-csi
 ARG CSI_IMAGE_VERSION=canary
 ARG GO_ARCH
 ARG SRC_DIR
@@ -23,11 +23,28 @@ RUN source /build.env && \
 # test if the downloaded version of Golang works (different arch?)
 RUN ${GOROOT}/bin/go version && ${GOROOT}/bin/go env
 
+
+RUN sudo sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+    -e 's|^#baseurl=http://mirror.centos.org/$contentdir|baseurl=https://mirrors.ustc.edu.cn/centos|g' \
+    -i.bak \
+    /etc/yum.repos.d/CentOS-Stream-AppStream.repo \
+    /etc/yum.repos.d/CentOS-Stream-BaseOS.repo \
+    /etc/yum.repos.d/CentOS-Stream-Debuginfo.repo \
+    /etc/yum.repos.d/CentOS-Stream-Extras.repo \
+    /etc/yum.repos.d/CentOS-Stream-HighAvailability.repo \
+    /etc/yum.repos.d/CentOS-Stream-Media.repo \
+    /etc/yum.repos.d/CentOS-Stream-PowerTools.repo \
+    /etc/yum.repos.d/CentOS-Stream-RealTime.repo 
+
+RUN dnf config-manager --disable apache-arrow-centos || true
+
+RUN yum clean all && yum makecache 
+
 RUN dnf -y install \
-	librados-devel librbd-devel \
-	/usr/bin/cc \
-	make \
-	git \
+    librados-devel librbd-devel \
+    /usr/bin/cc \
+    make \
+    git \
     && true
 
 ENV GOROOT=${GOROOT} \
