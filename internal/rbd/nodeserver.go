@@ -117,7 +117,7 @@ func (ns *NodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVol
 		return nil, err
 	}
 
-	disableInUseChecks := req.GetPublishContext()["readonly"] == "true"
+	disableInUseChecks := req.GetPublishContext()["csi.supremind.com/readonly-attach"] == "true"
 	isBlock := req.GetVolumeCapability().GetBlock() != nil
 	// disableInUseChecks := false
 
