@@ -117,7 +117,7 @@ func (ns *NodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVol
 		return nil, err
 	}
 
-	disableInUseChecks := req.GetPublishContext()["csi.supremind.com/readonly-attach"] == "true"
+	disableInUseChecks := req.GetPublishContext()[readonlyAttachmentKey] == "true"
 	isBlock := req.GetVolumeCapability().GetBlock() != nil
 	// disableInUseChecks := false
 
@@ -460,17 +460,6 @@ func (ns *NodeServer) mountVolumeToStagePath(ctx context.Context, req *csi.NodeS
 	}
 	if csicommon.MountOptionContains(opt, rOnly) {
 		readOnly = true
-		// mount readonly files with noload option
-		// opt = append(opt, "noload")
-		// err = diskMounter.FormatAndMount(devicePath, stagingPath, fsType, opt)
-		// if err != nil {
-		// 	util.ErrorLog(ctx, "failed to mount device path (%s) to staging path (%s) for readonly volume "+
-		// 		"(%s) error: %s Check dmesg logs if required.", devicePath,
-		// 		stagingPath,
-		// 		req.GetVolumeId(),
-		// 		err)
-		// }
-
 	}
 
 	if fsType == "xfs" {

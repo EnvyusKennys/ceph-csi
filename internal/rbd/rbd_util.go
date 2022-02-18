@@ -58,6 +58,8 @@ const (
 
 	// image metadata key for thick-provisioning
 	thickProvisionMetaKey = ".rbd.csi.ceph.com/thick-provisioned"
+	// volume metadata key for attachment
+	readonlyAttachmentKey = "csi.supremind.com/readonly-attach"
 )
 
 // rbdImage contains common attributes and methods for the rbdVolume and
