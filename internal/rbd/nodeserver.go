@@ -459,7 +459,9 @@ func (ns *NodeServer) mountVolumeToStagePath(ctx context.Context, req *csi.NodeS
 		}
 	}
 	if csicommon.MountOptionContains(opt, rOnly) {
+		// readOnly mount with noload option
 		readOnly = true
+		opt = append(opt, "noload")
 	}
 
 	if fsType == "xfs" {
