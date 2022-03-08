@@ -1131,10 +1131,12 @@ func (cs *ControllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 		ro = "true"
 	}
 
-	block := "false"
+	volctx := req.GetVolumeContext()
+	var block string
 
-	if _, ok := req.GetVolumeContext()["writeBlock"]; ok {
-		block = "true"
+	if _, ok := volctx["writeBlock"]; ok {
+
+		block = volctx["writeBlock"]
 	}
 
 	return &csi.ControllerPublishVolumeResponse{PublishContext: map[string]string{readonlyAttachmentKey: ro, "writeBlock": block}}, nil
