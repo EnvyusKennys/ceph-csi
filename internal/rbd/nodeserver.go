@@ -117,6 +117,12 @@ func (ns *NodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVol
 		return nil, err
 	}
 
+	if req.VolumeCapability.AccessMode.Mode == csi.VolumeCapability_AccessMode_SINGLE_NODE_WRITER {
+		if req.GetPublishContext()[readonlyAttachmentKey] == "true" {
+			return nil, status.Error(codes.InvalidArgument, "vol has already been mount as ReadWrite on another node")
+		}
+	}
+
 	disableInUseChecks := req.GetPublishContext()[readonlyAttachmentKey] == "true"
 	isBlock := req.GetVolumeCapability().GetBlock() != nil
 	// disableInUseChecks := false
@@ -129,12 +135,6 @@ func (ns *NodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVol
 		}
 
 		disableInUseChecks = true
-	}
-
-	if req.VolumeCapability.AccessMode.Mode == csi.VolumeCapability_AccessMode_SINGLE_NODE_WRITER {
-		if req.GetPublishContext()[readonlyAttachmentKey] == "true" {
-			return nil, fmt.Errorf("failed to proceed with RW volume")
-		}
 	}
 
 	volID := req.GetVolumeId()
