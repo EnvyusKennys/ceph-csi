@@ -131,6 +131,12 @@ func (ns *NodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVol
 		disableInUseChecks = true
 	}
 
+	if req.VolumeCapability.AccessMode.Mode == csi.VolumeCapability_AccessMode_SINGLE_NODE_WRITER {
+		if req.GetPublishContext()[readonlyAttachmentKey] == "true" {
+			return nil, fmt.Errorf("failed to proceed with RW volume")
+		}
+	}
+
 	volID := req.GetVolumeId()
 
 	cr, err := util.NewUserCredentials(req.GetSecrets())
