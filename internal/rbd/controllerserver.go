@@ -1130,16 +1130,16 @@ func (cs *ControllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 	if req.GetReadonly() {
 		ro = "true"
 	}
+	// volctx := req.GetVolumeContext()
+	// var block string
 
-	volctx := req.GetVolumeContext()
-	var block string
+	// if _, ok := volctx["writeBlock"]; ok {
 
-	if _, ok := volctx["writeBlock"]; ok {
+	// 	block = volctx["writeBlock"]
+	// }
 
-		block = volctx["writeBlock"]
-	}
-
-	return &csi.ControllerPublishVolumeResponse{PublishContext: map[string]string{readonlyAttachmentKey: ro, "writeBlock": block}}, nil
+	// return &csi.ControllerPublishVolumeResponse{PublishContext: map[string]string{readonlyAttachmentKey: ro, "writeBlock": block}}, nil
+	return &csi.ControllerPublishVolumeResponse{PublishContext: map[string]string{readonlyAttachmentKey: ro}}, nil
 }
 
 // ControllerUnpublishVolume does nothing.
