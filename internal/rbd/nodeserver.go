@@ -118,8 +118,8 @@ func (ns *NodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVol
 	}
 
 	// same with external-attacher's volcap ?
-	// if req.VolumeCapability.AccessMode.Mode == csi.VolumeCapability_AccessMode_SINGLE_NODE_WRITER {
-	if req.GetPublishContext()["accessmode"] == csi.VolumeCapability_AccessMode_Mode_name[1] {
+	if req.VolumeCapability.AccessMode.Mode == csi.VolumeCapability_AccessMode_SINGLE_NODE_WRITER {
+		// if req.GetPublishContext()["accessmode"] == csi.VolumeCapability_AccessMode_Mode_name[1] {
 		// req.VolumeCapability.AccessMode.Mode = csi.VolumeCapability_AccessMode_SINGLE_NODE_WRITER
 		if req.GetPublishContext()[readonlyAttachmentKey] == "true" {
 			return nil, status.Error(codes.InvalidArgument, "vol has already been mount as ReadWrite on another node")
