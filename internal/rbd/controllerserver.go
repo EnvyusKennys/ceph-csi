@@ -1131,16 +1131,10 @@ func (cs *ControllerServer) ControllerPublishVolume(ctx context.Context, req *cs
 	if req.GetReadonly() {
 		ro = "true"
 	}
-	// volctx := req.GetVolumeContext()
-	// var block string
 
-	// if _, ok := volctx["writeBlock"]; ok {
-
-	// 	block = volctx["writeBlock"]
-	// }
-
-	// return &csi.ControllerPublishVolumeResponse{PublishContext: map[string]string{readonlyAttachmentKey: ro, "writeBlock": block}}, nil
-	return &csi.ControllerPublishVolumeResponse{PublishContext: map[string]string{readonlyAttachmentKey: ro}}, nil
+	mode := req.GetVolumeCapability().GetAccessMode().GetMode()
+	am := csi.VolumeCapability_AccessMode_Mode_name[int32(mode)]
+	return &csi.ControllerPublishVolumeResponse{PublishContext: map[string]string{readonlyAttachmentKey: ro, "Capability": am}}, nil
 }
 
 // ControllerUnpublishVolume does nothing.
