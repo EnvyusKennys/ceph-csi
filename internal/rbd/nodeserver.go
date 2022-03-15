@@ -117,6 +117,13 @@ func (ns *NodeServer) NodeStageVolume(ctx context.Context, req *csi.NodeStageVol
 		return nil, err
 	}
 
+	// sync volcap with va's accessmode
+	if req.GetPublishContext()["accessmode"] == csi.VolumeCapability_AccessMode_Mode_name[1] {
+		req.VolumeCapability.AccessMode.Mode = csi.VolumeCapability_AccessMode_SINGLE_NODE_WRITER
+	} else {
+		req.VolumeCapability.AccessMode.Mode = csi.VolumeCapability_AccessMode_MULTI_NODE_READER_ONLY
+	}
+
 	disableInUseChecks := req.GetPublishContext()[readonlyAttachmentKey] == "true"
 	isBlock := req.GetVolumeCapability().GetBlock() != nil
 	// disableInUseChecks := false
