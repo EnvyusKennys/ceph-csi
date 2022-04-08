@@ -408,6 +408,24 @@ func (ns *NodeServer) NodePublishVolume(ctx context.Context, req *csi.NodePublis
 	volID := req.GetVolumeId()
 	stagingPath += "/" + volID
 
+	// set podinfoonmount = true to get the actual pod info
+	podName := req.GetVolumeContext()["csi.storage.k8s.io/pod.name"]
+	podNamespace := req.GetVolumeContext()["csi.storage.k8s.io/pod.namespace"]
+
+	pod, err := util.GetPod(podName, podNamespace)
+	if err != nil {
+		return nil, err
+	}
+
+	ro, err := util.CheckIfReadonlyMount(pod)
+	if err != nil {
+		req.Readonly = ro
+	}
+
+	if !ro && req.GetPublishContext()[readonlyAttachmentKey] == "true" {
+		return nil, status.Errorf(codes.Aborted, "cannot mount readwrite pod for multi readonly capability", volID)
+	}
+
 	if acquired := ns.VolumeLocks.TryAcquire(volID); !acquired {
 		util.ErrorLog(ctx, util.VolumeOperationAlreadyExistsFmt, volID)
 		return nil, status.Errorf(codes.Aborted, util.VolumeOperationAlreadyExistsFmt, volID)
