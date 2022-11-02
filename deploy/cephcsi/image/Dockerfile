@@ -36,7 +36,7 @@ RUN sudo sed -e 's|^mirrorlist=|#mirrorlist=|g' \
     /etc/yum.repos.d/CentOS-Stream-PowerTools.repo \
     /etc/yum.repos.d/CentOS-Stream-RealTime.repo 
 
-RUN dnf config-manager --disable apache-arrow-centos || true
+RUN dnf config-manager --disable apache-arrow-centos,tcmu-runner,tcmu-runner-source,tcmu-runner-noarch || true
 
 RUN yum clean all && yum makecache 
 
