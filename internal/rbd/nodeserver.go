@@ -421,11 +421,6 @@ func (ns *NodeServer) NodePublishVolume(ctx context.Context, req *csi.NodePublis
 	if err != nil {
 		req.Readonly = ro
 	}
-	if _, ok := req.GetPublishContext()[readonlyAttachmentKey]; !ok {
-		if !ro {
-			return nil, status.Errorf(codes.Aborted, "cannot mount readwrite pod for multi readonly capability", volID)
-		}
-	}
 
 	if req.GetPublishContext()[readonlyAttachmentKey] == "true" {
 		if !ro {
